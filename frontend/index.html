@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Feedback Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <style>
+    /* ========== CSS VARIABLES ========== */
+    :root {
+      --bg: #f7f4ef;
+      --surface: #ffffff;
+      --surface2: #f0ebe2;
+      --border: #ddd5c8;
+      --text: #1a1208;
+      --text2: #5a4f3a;
+      --text3: #9a8d78;
+      --red: #c0392b;
+      --red2: #e74c3c;
+      --red-light: #fdf0ee;
+      --red-dark: #8b1a12;
+      --green: #1e7a3a;
+      --green2: #27ae60;
+      --green-light: #eaf4ee;
+      --green-dark: #0f4d22;
+      --shadow: 0 2px 16px rgba(0,0,0,0.07);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+      --radius: 12px;
+      --radius-lg: 18px;
+      --transition: 0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+    [data-theme="dark"] {
+      --bg: #100d08;
+      --surface: #1c1710;
+      --surface2: #262015;
+      --border: #3a3025;
+      --text: #f0ebe0;
+      --text2: #c8b89a;
+      --text3: #8a7d65;
+      --red-light: #2d1210;
+      --green-light: #0c2016;
+      --shadow: 0 2px 16px rgba(0,0,0,0.45);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.55);
+    }
+
+    /* ========== RESET & BASE ========== */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background var(--transition), color var(--transition);
+      line-height: 1.6;
+    }
+
+    /* ========== NAVBAR ========== */
+    .navbar {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--surface);
+      border-bottom: 2px solid var(--border);
+      padding: 0 2.5rem;
+      height: 66px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: var(--shadow);
+      transition: background var(--transition);
+    }
+    .nav-brand { display:flex; align-items:center; gap:12px; text-decoration:none; }
+    .nav-logo {
+      width:40px; height:40px; border-radius:11px;
+      background: linear-gradient(135deg, var(--red), var(--green));
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; font-size:20px; flex-shrink:0;
+    }
+    .nav-brand-text { font-family:'DM Serif Display',serif; font-size:1.2rem; color:var(--text); }
+    .nav-brand-text span { color: var(--red); }
+    .nav-links { display:flex; align-items:center; gap:4px; }
+    .nav-btn {
+      padding: 8px 18px; border-radius:9px;
+      border: none; background:transparent;
+      color: var(--text2); font-family:'DM Sans',sans-serif;
+      font-size:0.88rem; font-weight:500; cursor:pointer;
+      display:flex; align-items:center; gap:6px;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover { background:var(--surface2); color:var(--text); }
+    .nav-btn.active { background:var(--red-light); color:var(--red); font-weight:600; }
+    [data-theme="dark"] .nav-btn.active { background:var(--red-light); color:#f47b71; }
+    .theme-toggle {
+      width:38px; height:38px; border-radius:10px;
+      border:1.5px solid var(--border); background:var(--surface2);
+      color:var(--text2); cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; margin-left:12px;
+      transition: all 0.2s;
+    }
+    .theme-toggle:hover { background:var(--surface); color:var(--text); border-color:var(--text3); }
+
+    /* ========== HERO ========== */
+    .hero {
+      background: linear-gradient(135deg, var(--red-dark) 0%, var(--red) 45%, var(--green) 100%);
+      padding: 4rem 2rem 3.5rem;
+      text-align:center; position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 40%);
+    }
+    .hero-dots {
+      position:absolute; inset:0; overflow:hidden;
+      background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .hero-content { position:relative; max-width:700px; margin:0 auto; }
+    .hero h1 { font-family:'DM Serif Display',serif; font-size:2.8rem; color:#fff; line-height:1.12; margin-bottom:1rem; }
+    .hero h1 em { font-style:italic; opacity:0.88; }
+    .hero p { color:rgba(255,255,255,0.82); font-size:1.05rem; font-weight:300; max-width:500px; margin:0 auto 1.8rem; }
+    .hero-tags { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+    .hero-tag {
+      background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.28);
+      color:#fff; padding:5px 15px; border-radius:100px;
+      font-size:0.8rem; font-weight:500; display:flex; align-items:center; gap:6px;
+    }
+
+    /* ========== PAGES ========== */
+    .page { display:none; }
+    .page.active { display:block; }
+    .container { max-width:880px; margin:0 auto; padding:2.5rem 2rem; }
+
+    /* ========== FORM CARD ========== */
+    .card {
+      background:var(--surface); border:1.5px solid var(--border);
+      border-radius:var(--radius-lg); box-shadow:var(--shadow-lg);
+      padding:2.5rem;
+      transition: background var(--transition);
+    }
+    .card-header { display:flex; align-items:center; gap:16px; padding-bottom:1.8rem; border-bottom:1.5px solid var(--border); margin-bottom:2rem; }
+    .card-icon {
+      width:52px; height:52px; border-radius:13px;
+      background:var(--red-light); color:var(--red);
+      display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;
+    }
+    [data-theme="dark"] .card-icon { color:#f47b71; }
+    .card-header h2 { font-family:'DM Serif Display',serif; font-size:1.65rem; }
+    .card-header p { color:var(--text3); font-size:0.88rem; margin-top:3px; }
+
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.3rem; }
+    .form-group { display:flex; flex-direction:column; gap:7px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-label {
+      font-size:0.78rem; font-weight:600; letter-spacing:0.06em;
+      text-transform:uppercase; color:var(--text2);
+    }
+    .form-input, .form-textarea, .form-select {
+      background:var(--surface2); border:1.5px solid var(--border);
+      border-radius:10px; padding:11px 14px;
+      font-family:'DM Sans',sans-serif; font-size:0.95rem; color:var(--text);
+      transition:all 0.2s; outline:none; width:100%;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.12);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color:var(--text3); }
+    .form-textarea { resize:vertical; min-height:110px; line-height:1.65; }
+    .form-select option { background:var(--surface); color:var(--text); }
+
+    /* STAR RATING */
+    .star-wrap { display:flex; align-items:center; gap:4px; }
+    .star {
+      font-size:32px; cursor:pointer; color:var(--border);
+      transition: color 0.15s, transform 0.15s; user-select:none; line-height:1;
+    }
+    .star.lit { color:#f39c12; }
+    .star:hover { transform: scale(1.25); }
+    .rating-label { font-size:0.85rem; color:var(--text3); margin-left:10px; font-weight:500; }
+
+    /* SUBMIT BUTTON */
+    .btn-primary {
+      width:100%; padding:14px 24px;
+      border:none; border-radius:12px;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      color:#fff; font-family:'DM Sans',sans-serif;
+      font-size:1rem; font-weight:600; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      transition: all 0.25s; margin-top:0.4rem;
+    }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(192,57,43,0.38); }
+    .btn-primary:active { transform:translateY(0); }
+    .btn-primary:disabled { opacity:0.65; pointer-events:none; }
+
+    /* ========== STATS ========== */
+    .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2rem; }
+    .stat-card {
+      background:var(--surface); border:1.5px solid var(--border);
+      border-radius:var(--radius); padding:1.2rem 1.1rem; text-align:center;
+      box-shadow:var(--shadow);
+    }
+    .stat-num { font-family:'DM Serif Display',serif; font-size:2.1rem; line-height:1; }
+    .stat-num.c-red { color:var(--red); }
+    .stat-num.c-green { color:var(--green); }
+    .stat-num.c-amber { color:#d97706; }
+    .stat-num.c-gray { color:var(--text2); }
+    .stat-label { font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text3); margin-top:5px; font-weight:600; }
+
+    /* ========== FEEDBACK HEADER ========== */
+    .feedback-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.8rem; flex-wrap:wrap; gap:12px; }
+    .feedback-bar h2 { font-family:'DM Serif Display',serif; font-size:1.8rem; }
+    .feedback-bar p { color:var(--text3); font-size:0.85rem; margin-top:2px; }
+    .btn-refresh {
+      background:var(--green-light); color:var(--green);
+      border:1.5px solid var(--green); padding:9px 18px;
+      border-radius:10px; font-family:'DM Sans',sans-serif;
+      font-size:0.88rem; font-weight:600; cursor:pointer;
+      display:flex; align-items:center; gap:6px; transition:all 0.2s;
+    }
+    .btn-refresh:hover { background:var(--green); color:#fff; }
+    [data-theme="dark"] .btn-refresh { color:#4ade80; border-color:#4ade80; }
+    [data-theme="dark"] .btn-refresh:hover { background:var(--green); color:#fff; border-color:var(--green); }
+
+    /* ========== FEEDBACK CARDS ========== */
+    .feedback-list { display:flex; flex-direction:column; gap:1rem; }
+    .feedback-card {
+      background:var(--surface); border:1.5px solid var(--border);
+      border-radius:var(--radius-lg); padding:1.6rem 1.8rem;
+      box-shadow:var(--shadow); transition: all 0.22s;
+      animation: fadeUp 0.4s ease both;
+    }
+    .feedback-card:hover { box-shadow:var(--shadow-lg); transform:translateY(-2px); }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .fc-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
+    .fc-left { display:flex; align-items:center; gap:12px; }
+    .fc-avatar {
+      width:44px; height:44px; border-radius:11px;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:0.95rem; color:#fff; flex-shrink:0;
+    }
+    .fc-name { font-weight:600; font-size:1rem; }
+    .fc-course { font-size:0.82rem; color:var(--text3); margin-top:2px; display:flex; align-items:center; gap:4px; }
+    .fc-right { display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
+    .fc-stars { color:#f39c12; letter-spacing:1px; font-size:0.95rem; }
+    .badge {
+      font-size:0.75rem; font-weight:600; padding:3px 11px;
+      border-radius:100px; border:1px solid;
+    }
+    .badge-pos { background:var(--green-light); color:var(--green); border-color:var(--green); }
+    .badge-neu { background:var(--surface2); color:var(--text2); border-color:var(--border); }
+    .badge-neg { background:var(--red-light); color:var(--red); border-color:var(--red); }
+    [data-theme="dark"] .badge-pos { color:#4ade80; border-color:#4ade80; }
+    [data-theme="dark"] .badge-neg { color:#f47b71; border-color:#f47b71; }
+    .fc-comment {
+      font-size:0.92rem; color:var(--text2); line-height:1.68;
+      border-top:1px solid var(--border); padding-top:12px; margin-top:4px;
+    }
+    .fc-footer { display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
+    .fc-time { font-size:0.78rem; color:var(--text3); display:flex; align-items:center; gap:4px; }
+    .btn-delete {
+      background:transparent; border:1px solid var(--border);
+      color:var(--text3); padding:5px 12px; border-radius:8px;
+      font-size:0.78rem; cursor:pointer; display:flex; align-items:center; gap:4px;
+      transition:all 0.2s;
+    }
+    .btn-delete:hover { background:var(--red-light); color:var(--red); border-color:var(--red); }
+
+    /* EMPTY STATE */
+    .empty-state { text-align:center; padding:4rem 2rem; color:var(--text3); }
+    .empty-state i { font-size:3.5rem; display:block; margin-bottom:1rem; opacity:0.5; }
+    .empty-state h3 { font-family:'DM Serif Display',serif; font-size:1.4rem; color:var(--text2); margin-bottom:0.4rem; }
+
+    /* ========== LOADING SKELETON ========== */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%);
+      background-size:200% 100%;
+      animation:shimmer 1.5s infinite;
+      border-radius:8px;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .sk-card { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius-lg); padding:1.6rem 1.8rem; margin-bottom:1rem; }
+    .sk-line { height:14px; margin-bottom:10px; }
+    .sk-line.short { width:40%; }
+    .sk-line.med { width:65%; }
+    .sk-line.full { width:100%; }
+    .sk-avatar { width:44px; height:44px; border-radius:11px; flex-shrink:0; }
+
+    /* ========== TOAST ========== */
+    .toast {
+      position:fixed; bottom:2rem; right:2rem;
+      padding:14px 22px; border-radius:14px;
+      font-size:0.92rem; font-weight:500;
+      display:flex; align-items:center; gap:10px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.2);
+      transform:translateY(100px); opacity:0;
+      transition:all 0.45s cubic-bezier(0.34,1.56,0.64,1);
+      z-index:999; max-width:340px;
+    }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { background:var(--green); color:#fff; }
+    .toast.error { background:var(--red); color:#fff; }
+
+    /* ========== SPINNER ========== */
+    .spin {
+      display:inline-block; width:18px; height:18px;
+      border:2.5px solid rgba(255,255,255,0.3);
+      border-top-color:#fff; border-radius:50%;
+      animation:rotate 0.7s linear infinite;
+    }
+    @keyframes rotate { to { transform:rotate(360deg); } }
+
+    /* ========== API FLOW DIAGRAM ========== */
+    .flow-section { margin-top:3rem; }
+    .flow-title { font-family:'DM Serif Display',serif; font-size:1.4rem; margin-bottom:1.2rem; display:flex; align-items:center; gap:10px; }
+    .flow-diagram {
+      background:var(--surface); border:1.5px solid var(--border);
+      border-radius:var(--radius-lg); padding:1.8rem 2rem;
+      display:flex; align-items:center; justify-content:center;
+      gap:0; flex-wrap:wrap; overflow:auto;
+    }
+    .flow-node {
+      background:var(--surface2); border:1.5px solid var(--border);
+      border-radius:10px; padding:10px 16px; text-align:center;
+      font-size:0.82rem; font-weight:600; min-width:110px;
+    }
+    .flow-node .fn-icon { font-size:1.4rem; display:block; margin-bottom:4px; }
+    .flow-node .fn-label { color:var(--text2); font-size:0.72rem; font-weight:400; margin-top:2px; }
+    .flow-node.red { background:var(--red-light); border-color:var(--red); color:var(--red); }
+    .flow-node.green { background:var(--green-light); border-color:var(--green); color:var(--green); }
+    [data-theme="dark"] .flow-node.red { color:#f47b71; }
+    [data-theme="dark"] .flow-node.green { color:#4ade80; }
+    .flow-arrow { color:var(--text3); font-size:1.4rem; padding:0 6px; flex-shrink:0; }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width:640px) {
+      .navbar { padding:0 1.2rem; }
+      .nav-brand-text { display:none; }
+      .hero h1 { font-size:1.9rem; }
+      .container { padding:1.5rem 1.1rem; }
+      .form-grid { grid-template-columns:1fr; }
+      .stats-grid { grid-template-columns:1fr 1fr; }
+      .card { padding:1.6rem; }
+      .flow-diagram { gap:4px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ======== NAVBAR ======== -->
+<nav class="navbar">
+  <a class="nav-brand" href="#">
+    <div class="nav-logo"><i class="ti ti-school" aria-hidden="true"></i></div>
+    <span class="nav-brand-text"><span>Feedback</span> Manager</span>
+  </a>
+  <div class="nav-links">
+    <button class="nav-btn active" id="tab-submit" onclick="showPage('submit')">
+      <i class="ti ti-message-plus"></i> Submit
+    </button>
+    <button class="nav-btn" id="tab-view" onclick="showPage('view')">
+      <i class="ti ti-layout-list"></i> All Feedback
+    </button>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" id="theme-btn">
+      <i class="ti ti-moon" id="theme-icon"></i>
+    </button>
+  </div>
+</nav>
+
+<!-- ======== HERO ======== -->
+<div class="hero">
+  <div class="hero-dots"></div>
+  <div class="hero-content">
+    <h1>Student <em>Feedback</em> Manager</h1>
+    <p>Full-stack application — Express.js backend, MongoDB database, Mongoose ODM, dynamic frontend.</p>
+    <div class="hero-tags">
+      <span class="hero-tag"><i class="ti ti-server"></i> Express.js</span>
+      <span class="hero-tag"><i class="ti ti-database"></i> MongoDB</span>
+      <span class="hero-tag"><i class="ti ti-webhook"></i> Mongoose ODM</span>
+      <span class="hero-tag"><i class="ti ti-api"></i> REST API</span>
+    </div>
+  </div>
+</div>
+
+<!-- ======== SUBMIT PAGE ======== -->
+<div class="page active" id="page-submit">
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><i class="ti ti-message-star"></i></div>
+        <div>
+          <h2>Submit Your Feedback</h2>
+          <p>Data → Express.js POST route → Mongoose → MongoDB</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-input" type="text" id="inp-name" placeholder="e.g. Rahul Sharma" autocomplete="off" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Course / Subject</label>
+          <input class="form-input" type="text" id="inp-course" placeholder="e.g. Web Development" autocomplete="off" />
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Your Rating</label>
+          <div class="star-wrap" id="stars">
+            <span class="star" data-v="1" onclick="setRating(1)">★</span>
+            <span class="star" data-v="2" onclick="setRating(2)">★</span>
+            <span class="star" data-v="3" onclick="setRating(3)">★</span>
+            <span class="star" data-v="4" onclick="setRating(4)">★</span>
+            <span class="star" data-v="5" onclick="setRating(5)">★</span>
+            <span class="rating-label" id="rating-label">Click a star to rate</span>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Your Comments</label>
+          <textarea class="form-textarea" id="inp-comment" placeholder="Share your thoughts about the course, teaching methods, or materials..."></textarea>
+        </div>
+        <div class="form-group full">
+          <button class="btn-primary" id="submit-btn" onclick="submitFeedback()">
+            <i class="ti ti-send"></i> Submit Feedback to MongoDB
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- API FLOW DIAGRAM -->
+    <div class="flow-section">
+      <div class="flow-title"><i class="ti ti-arrow-right-circle" style="color:var(--red)"></i> POST Request Flow</div>
+      <div class="flow-diagram">
+        <div class="flow-node red"><span class="fn-icon">📝</span>HTML Form<div class="fn-label">Frontend</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><span class="fn-icon">📡</span>fetch() POST<div class="fn-label">/api/feedback</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><span class="fn-icon">⚡</span>Express Route<div class="fn-label">server.js</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><span class="fn-icon">🔗</span>Mongoose<div class="fn-label">.save()</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node green"><span class="fn-icon">🗄️</span>MongoDB<div class="fn-label">Saved! ✓</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== VIEW PAGE ======== -->
+<div class="page" id="page-view">
+  <div class="container">
+    <div class="feedback-bar">
+      <div>
+        <h2>All Feedback</h2>
+        <p>GET /api/feedback → Mongoose .find() → MongoDB</p>
+      </div>
+      <button class="btn-refresh" onclick="loadFeedback()">
+        <i class="ti ti-refresh"></i> Refresh
+      </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num c-red" id="st-total">—</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num c-amber" id="st-avg">—</div>
+        <div class="stat-label">Avg Rating</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num c-green" id="st-pos">—</div>
+        <div class="stat-label">Positive</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num c-gray" id="st-neg">—</div>
+        <div class="stat-label">Needs Work</div>
+      </div>
+    </div>
+
+    <!-- Feedback List -->
+    <div id="feedback-container"></div>
+
+    <!-- GET FLOW -->
+    <div class="flow-section">
+      <div class="flow-title"><i class="ti ti-arrow-left-circle" style="color:var(--green)"></i> GET Request Flow</div>
+      <div class="flow-diagram">
+        <div class="flow-node green"><span class="fn-icon">🗄️</span>MongoDB<div class="fn-label">Documents</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><span class="fn-icon">🔗</span>Mongoose<div class="fn-label">.find()</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><span class="fn-icon">⚡</span>Express Route<div class="fn-label">res.json()</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node"><span class="fn-icon">📡</span>fetch() GET<div class="fn-label">/api/feedback</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node red"><span class="fn-icon">🖥️</span>Display<div class="fn-label">Frontend</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ==========================================
+  // STATE
+  // ==========================================
+  let currentRating = 0;
+  let theme = localStorage.getItem('fbm_theme') || 'light';
+
+  // Apply saved theme
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeIcon();
+
+  // ==========================================
+  // THEME
+  // ==========================================
+  function toggleTheme() {
+    theme = theme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('fbm_theme', theme);
+    updateThemeIcon();
+  }
+  function updateThemeIcon() {
+    document.getElementById('theme-icon').className = theme === 'dark' ? 'ti ti-sun' : 'ti ti-moon';
+  }
+
+  // ==========================================
+  // PAGE NAVIGATION
+  // ==========================================
+  function showPage(p) {
+    document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('page-' + p).classList.add('active');
+    document.getElementById('tab-' + p).classList.add('active');
+    if (p === 'view') loadFeedback();
+  }
+
+  // ==========================================
+  // STAR RATING
+  // ==========================================
+  function setRating(v) {
+    currentRating = v;
+    const labels = ['', 'Poor 😞', 'Fair 😐', 'Good 🙂', 'Great 😄', 'Excellent 🌟'];
+    document.getElementById('rating-label').textContent = labels[v] + ' (' + v + '/5)';
+    document.querySelectorAll('.star').forEach(s => {
+      s.classList.toggle('lit', +s.dataset.v <= v);
+    });
+  }
+
+  // ==========================================
+  // SUBMIT FEEDBACK → POST /api/feedback
+  // ==========================================
+  async function submitFeedback() {
+    const name    = document.getElementById('inp-name').value.trim();
+    const course  = document.getElementById('inp-course').value.trim();
+    const comment = document.getElementById('inp-comment').value.trim();
+
+    if (!name || !course || !currentRating || !comment) {
+      showToast('Please fill all fields and provide a rating!', 'error');
+      return;
+    }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spin"></div> Saving to MongoDB...';
+
+    try {
+      // ★ REAL API CALL ★
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, course, rating: currentRating, comment })
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || 'Server error');
+
+      showToast('Feedback saved to MongoDB! ✓', 'success');
+      // Reset form
+      document.getElementById('inp-name').value = '';
+      document.getElementById('inp-course').value = '';
+      document.getElementById('inp-comment').value = '';
+      currentRating = 0;
+      document.querySelectorAll('.star').forEach(s => s.classList.remove('lit'));
+      document.getElementById('rating-label').textContent = 'Click a star to rate';
+
+    } catch (err) {
+      showToast('Error: ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-send"></i> Submit Feedback to MongoDB';
+    }
+  }
+
+  // ==========================================
+  // LOAD FEEDBACK → GET /api/feedback
+  // ==========================================
+  async function loadFeedback() {
+    const container = document.getElementById('feedback-container');
+    // Show skeleton loaders
+    container.innerHTML = [1,2,3].map(() => `
+      <div class="sk-card">
+        <div style="display:flex;gap:12px;margin-bottom:14px">
+          <div class="skeleton sk-avatar"></div>
+          <div style="flex:1">
+            <div class="skeleton sk-line med"></div>
+            <div class="skeleton sk-line short" style="margin-top:8px"></div>
+          </div>
+        </div>
+        <div class="skeleton sk-line full"></div>
+        <div class="skeleton sk-line med" style="margin-top:8px"></div>
+      </div>`).join('');
+
+    try {
+      // ★ REAL API CALL ★
+      const res = await fetch('/api/feedback');
+      const data = await res.json();
+
+      if (!data.success) throw new Error(data.message);
+
+      // Update stats
+      document.getElementById('st-total').textContent = data.count;
+      document.getElementById('st-avg').textContent   = data.stats.avgRating + ' ★';
+      document.getElementById('st-pos').textContent   = data.stats.positive;
+      document.getElementById('st-neg').textContent   = data.stats.negative;
+
+      if (!data.data.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="ti ti-message-off"></i>
+            <h3>No feedback yet</h3>
+            <p>Submit the first feedback!</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = '<div class="feedback-list">' +
+        data.data.map((f, i) => renderCard(f, i)).join('') +
+      '</div>';
+
+    } catch (err) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="ti ti-wifi-off"></i>
+          <h3>Could not connect to server</h3>
+          <p>${err.message}</p>
+          <p style="margin-top:8px;font-size:0.85rem">Make sure backend is running: <code>node server.js</code></p>
+        </div>`;
+    }
+  }
+
+  // ==========================================
+  // RENDER CARD
+  // ==========================================
+  const AVATAR_COLORS = ['#c0392b','#1e7a3a','#d35400','#1a5276','#76448a','#148f77','#b7770d','#922b21'];
+  function getInitials(name) { return name.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+  function getColor(name) { let h=0; for(let c of name) h=(h<<5)-h+c.charCodeAt(0); return AVATAR_COLORS[Math.abs(h)%AVATAR_COLORS.length]; }
+  function timeAgo(ts) {
+    const d = Date.now() - new Date(ts).getTime(), m=60000, h=3600000, day=86400000;
+    if (d<m) return 'Just now';
+    if (d<h) return Math.floor(d/m) + ' min ago';
+    if (d<day) return Math.floor(d/h) + ' hours ago';
+    return Math.floor(d/day) + ' days ago';
+  }
+  function getBadge(s) {
+    if(s==='positive') return ['badge-pos','Positive 👍'];
+    if(s==='neutral')  return ['badge-neu','Neutral 😐'];
+    return ['badge-neg','Needs Work 🔧'];
+  }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function renderCard(f, i) {
+    const [bClass, bLabel] = getBadge(f.sentiment);
+    const stars = '★'.repeat(f.rating) + '☆'.repeat(5 - f.rating);
+    const color  = getColor(f.name);
+    return `
+      <div class="feedback-card" style="animation-delay:${i*0.07}s" id="card-${f._id}">
+        <div class="fc-top">
+          <div class="fc-left">
+            <div class="fc-avatar" style="background:${color}">${esc(getInitials(f.name))}</div>
+            <div>
+              <div class="fc-name">${esc(f.name)}</div>
+              <div class="fc-course"><i class="ti ti-book-2" style="font-size:12px"></i> ${esc(f.course)}</div>
+            </div>
+          </div>
+          <div class="fc-right">
+            <span class="fc-stars">${stars}</span>
+            <span class="badge ${bClass}">${bLabel}</span>
+          </div>
+        </div>
+        <div class="fc-comment">${esc(f.comment)}</div>
+        <div class="fc-footer">
+          <span class="fc-time"><i class="ti ti-clock" style="font-size:12px"></i> ${timeAgo(f.createdAt)}</span>
+          <button class="btn-delete" onclick="deleteFeedback('${f._id}')">
+            <i class="ti ti-trash"></i> Delete
+          </button>
+        </div>
+      </div>`;
+  }
+
+  // ==========================================
+  // DELETE → DELETE /api/feedback/:id
+  // ==========================================
+  async function deleteFeedback(id) {
+    if (!confirm('Are you sure you want to delete this feedback?')) return;
+    try {
+      const res = await fetch('/api/feedback/' + id, { method: 'DELETE' });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      document.getElementById('card-' + id)?.remove();
+      showToast('Feedback deleted from MongoDB!', 'success');
+      // Refresh stats
+      loadFeedback();
+    } catch (err) {
+      showToast('Delete failed: ' + err.message, 'error');
+    }
+  }
+
+  // ==========================================
+  // TOAST NOTIFICATION
+  // ==========================================
+  let toastTimer;
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    const icon = type === 'success' ? 'ti-circle-check' : 'ti-alert-circle';
+    t.className = 'toast ' + type;
+    t.innerHTML = `<i class="ti ${icon}"></i> ${msg}`;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3800);
+  }
+</script>
+</body>
+</html>
