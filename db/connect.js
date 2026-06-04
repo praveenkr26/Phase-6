@@ -1,3 +1,4 @@
+const dns = require("dns");
 const mongoose = require("mongoose");
 
 const DEFAULT_MAX_RETRIES = 5;
@@ -7,6 +8,27 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function configureDnsForAtlas(uri) {
+  if (!uri || !uri.startsWith("mongodb+srv://")) {
+    return;
+  }
+
+  const configuredServers = (process.env.DNS_SERVERS || "1.1.1.1,8.8.8.8")
+    .split(",")
+    .map((server) => server.trim())
+    .filter(Boolean);
+
+  if (configuredServers.length === 0) {
+    return;
+  }
+
+  try {
+    dns.setServers(configuredServers);
+    console.log(`🌐 DNS servers set for MongoDB SRV lookup: ${configuredServers.join(", ")}`);
+  } catch (error) {
+    console.warn(`⚠️  Could not set custom DNS servers: ${error.message}`);
+  }
+}
 function getConnectionStateLabel() {
   switch (mongoose.connection.readyState) {
     case 0:
@@ -27,6 +49,7 @@ async function connectWithRetry(uri, options = {}) {
   const baseDelayMs = options.baseDelayMs ?? DEFAULT_BASE_DELAY_MS;
   const fallbackUri = options.fallbackUri || process.env.MONGO_URI_FALLBACK || "";
 
+  configureDnsForAtlas(uri);
   if (!uri) {
     console.warn("⚠️  MONGO_URI is missing. Skipping database connection.");
     return false;
