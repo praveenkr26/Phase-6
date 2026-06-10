@@ -1,5 +1,8 @@
 # Student Feedback Manager Backend
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3dbabe48-aaa2-4ce2-8b86-18874e22819e" />
+
+
 Express + MongoDB backend for the Student Feedback Manager project.
 
 ## Run
